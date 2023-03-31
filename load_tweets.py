@@ -309,7 +309,17 @@ def insert_tweet(connection,tweet):
             id_urls = get_id_urls(url['expanded_url'], connection)
 
             sql=sqlalchemy.sql.text('''
-                ''')
+                INSERT into tweet_urls
+                    (id_tweets,
+                    id_urls)
+                VALUES
+                    (:id_tweets,
+                    :id_urls)
+                    ''')
+            res = connection.execute(sql, {
+                'id_tweets':tweet.get('id'),
+                'id_urls':id_urls
+                })
 
         ########################################
         # insert into the tweet_mentions table
@@ -372,7 +382,7 @@ def insert_tweet(connection,tweet):
                     :tag)
                 on conflict do nothing;
                 ''')
-                res = connection.execute(sql, {
+            res= connection.execute(sql,{
                 'id_tweet':tweet.get('id'),
                 'tag':remove_nulls(tag)
                 })
@@ -402,7 +412,7 @@ def insert_tweet(connection,tweet):
                     :type)
                 on conflict do nothing;
                     ''')
-                res = connection.execute(sql, {
+            res = connection.execute(sql, {
                 'id_tweet':tweet.get('id'),
                 'id_url':id_urls,
                 'type':medium.get('type')
